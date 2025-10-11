@@ -7,6 +7,6 @@ Course refer to [Python Data Analysis Crash Course](https://www.udemy.com/course
 - 描述统计学分析  
 - 数据可视化图表; 对单个/两个/多个变量数据进行可视化  
 - 假设检验分析  
-  - 对数据进行线性回归分析, 对数据进行逻辑回归分析
+  - 线性回归, 逻辑回归
   - 卡方, t-test 
 
