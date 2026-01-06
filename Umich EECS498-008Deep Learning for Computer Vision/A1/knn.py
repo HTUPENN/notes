@@ -2,6 +2,7 @@
 Implements a K-Nearest Neighbor classifier in PyTorch.
 """
 import chunk
+import statistics
 from matplotlib import axes, axis
 import torch
 from typing import Dict, List
@@ -434,16 +435,32 @@ def knn_cross_validate(
     # HINT: torch.chunk                                                      #
     ##########################################################################
     # Replace "pass" statement with your code
-    x_train = x_train.reshape(x_train[0], -1)
+    x_train = x_train.reshape(x_train.shape[0], -1)
     x_train_folds = list(torch.chunk(x_train, num_folds))
     y_train_folds = list(torch.chunk(y_train, num_folds))
 
-    for i in num_folds:
-        # 验证集
-        x_validation = x_train_folds[i]
-        y_validation = y_train_folds[i]
+    # results
+    k_to_accuracies: Dict[int, List[float]] = {k: [] for k in k_choices}
 
-        # 训练集
+    for fold_idx in range(num_folds):
+        # validation set
+        x_validation = x_train_folds[fold_idx]
+        y_validation = y_train_folds[fold_idx]
+
+        # train set
+        x_train_parts = x_train_folds[:fold_idx] + x_train_folds[fold_idx + 1:]
+        y_train_parts = y_train_folds[:fold_idx] + y_train_folds[fold_idx + 1:]
+
+        x_train_concat = torch.cat(x_train_parts, dim=0)
+        y_train_concat = torch.cat(y_train_parts, dim=0)
+
+        # init knn class
+        cls = KnnClassifier(torch.tensor(x_train_concat),
+                            torch.tensor(y_train_concat))
+
+        for k in k_choices:
+            k_to_accuracies[k].append(cls.check_accuracy(
+                torch.tensor(x_validation), torch.tensor(y_validation), k, False))
 
     ##########################################################################
     #                           END OF YOUR CODE                             #
@@ -453,7 +470,7 @@ def knn_cross_validate(
     # find when running cross-validation. After running cross-validation,
     # k_to_accuracies[k] should be a list of length num_folds giving the
     # different accuracies we found trying `KnnClassifier`s using k neighbors.
-    k_to_accuracies = {}
+    # k_to_accuracies = {}
 
     ##########################################################################
     # TODO: Perform cross-validation to find the best value of k. For each   #
@@ -465,7 +482,7 @@ def knn_cross_validate(
     # HINT: torch.cat                                                        #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+
     ##########################################################################
     #                           END OF YOUR CODE                             #
     ##########################################################################
@@ -495,7 +512,14 @@ def knn_get_best_k(k_to_accuracies: Dict[int, List]):
     # the value of k that has the highest mean accuracy accross all folds.   #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+    max_accuracy = 0
+    # may sorted the dict if there is a tie on accuracy
+    # k_to_accuracies = dict(sorted(k_to_accuracies).item)
+    for k, accuracys in k_to_accuracies.items():
+        accuracy = statistics.mean(accuracys)
+        if accuracy > max_accuracy:
+            max_accuracy = accuracy
+            best_k = k
     ##########################################################################
     #                           END OF YOUR CODE                             #
     ##########################################################################
