@@ -14,8 +14,8 @@ def hello_helper():
     our environment is correctly set up on Google Colab.
     """
     print("Hello from a2_helpers.py!")
-    
-    
+
+
 def reset_seed(number):
     """
     Reset random seed to the specific number
@@ -28,14 +28,14 @@ def reset_seed(number):
     return
 
 
-
 def get_toy_data(
     num_inputs=5,
     input_size=4,
     hidden_size=10,
     num_classes=3,
     dtype=torch.float32,
-    device="cuda",
+    # device="cuda",
+    device="cpu",
 ):
     """
     Get toy data for use when developing a two-layer-net.

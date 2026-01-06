@@ -28,7 +28,8 @@ def _extract_tensors(dset, num=None, x_dtype=torch.float32):
     if num is not None:
         if num <= 0 or num > x.shape[0]:
             raise ValueError(
-                "Invalid value num=%d; must be in the range [0, %d]" % (num, x.shape[0])
+                "Invalid value num=%d; must be in the range [0, %d]" % (
+                    num, x.shape[0])
             )
         x = x[:num].clone()
         y = y[:num].clone()
@@ -53,7 +54,7 @@ def cifar10(num_train=None, num_test=None, x_dtype=torch.float32):
     - x_test: `x_dtype` tensor of shape (num_test, 3, 32, 32)
     - y_test: int64 tensor of shape (num_test, 3, 32, 32)
     """
-    
+
     download = not os.path.isdir("cifar-10-batches-py")
     dset_train = CIFAR10(root=".", download=download, train=True)
     dset_test = CIFAR10(root=".", train=False)
@@ -105,11 +106,12 @@ def preprocess_cifar10(
     X_train, y_train, X_test, y_test = cifar10(x_dtype=dtype)
 
     # Move data to the GPU
-    if cuda:
-        X_train = X_train.cuda()
-        y_train = y_train.cuda()
-        X_test = X_test.cuda()
-        y_test = y_test.cuda()
+    # FIXME: if could use gpu for this
+    # if cuda:
+    #     X_train = X_train.cuda()
+    #     y_train = y_train.cuda()
+    #     X_test = X_test.cuda()
+    #     y_test = y_test.cuda()
 
     # 0. Visualize some examples from the dataset.
     if show_examples:
@@ -146,8 +148,8 @@ def preprocess_cifar10(
 
     # 2. Reshape the image data into rows
     if flatten:
-      X_train = X_train.reshape(X_train.shape[0], -1)
-      X_test = X_test.reshape(X_test.shape[0], -1)
+        X_train = X_train.reshape(X_train.shape[0], -1)
+        X_test = X_test.reshape(X_test.shape[0], -1)
 
     # 3. Add bias dimension and transform into columns
     if bias_trick:
@@ -165,8 +167,8 @@ def preprocess_cifar10(
 
     # return the dataset
     data_dict = {}
-    data_dict["X_val"] = X_train[num_training : num_training + num_validation]
-    data_dict["y_val"] = y_train[num_training : num_training + num_validation]
+    data_dict["X_val"] = X_train[num_training: num_training + num_validation]
+    data_dict["y_val"] = y_train[num_training: num_training + num_validation]
     data_dict["X_train"] = X_train[0:num_training]
     data_dict["y_train"] = y_train[0:num_training]
 
